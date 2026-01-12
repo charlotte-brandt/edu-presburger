@@ -525,11 +525,14 @@ def rewrite_nodes_with_decode(dot: str) -> str:
 def aut_to_dot(aut, variable_order, new_variable_order = None, display_labels = True, display_atomic_construction = False, base = 2):
     dot = aut.to_dot_str()
     node_count = len(aut.get_reachable_states())
-    print(dot)
+    # print(dot)
     # Only convert labels for bases 2-36 (supports 0-9, A-Z notation)
     if base <= 36:
         dot = convert_int_labels_to_digitstrings(dot, len(variable_order), base)
-    print(dot)
+    else:
+        # For bases > 36, remove all edge labels
+        dot = re.sub(r'\[label="[^"]*"\]', '', dot)
+    # print(dot)
     if new_variable_order:
         if set(new_variable_order) != set(variable_order):
             raise AssertionError(
@@ -543,18 +546,18 @@ def aut_to_dot(aut, variable_order, new_variable_order = None, display_labels = 
                 for old_idx, var in enumerate(variable_order)
             }
             dot = reorder_digitstring_labels(dot, mapping, len(variable_order))
-    print(dot)
+    #print(dot)
     if not display_labels:
         dot = strip_state_names(dot)
     if display_atomic_construction:
         dot = drop_plain_circle_nodes(dot)
         dot = rewrite_nodes_with_decode(dot)
-    print(dot)
+    # print(dot)
     dot = merge_parallel_edges(dot)
     # Simplification only makes sense for digit string labels (bases <= 36)
     if base <= 36:
         dot = simplify_automaton_labels(dot, base)
     dot = add_rankdir_auto(dot, node_count)
     dot = optimize_dot_start_arrow(dot)
-    print(dot)
+    # print(dot)
     return dot

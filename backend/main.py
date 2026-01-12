@@ -41,7 +41,7 @@ class ReorderRequest(BaseModel):
 @app.post("/automaton/dot")
 async def automaton_dot(req: FormulaRequest):
     formula = req.formula
-    k_solutions = 9
+    k_solutions = 9 if req.base <= 10 else 0
     try:
         if req.base < 2:
             raise AssertionError("Base must be at least 2.")
