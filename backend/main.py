@@ -43,10 +43,10 @@ async def automaton_dot(req: FormulaRequest):
     formula = req.formula
     k_solutions = 9
     try:
+        if req.base < 2:
+            raise AssertionError("Base must be at least 2.")
         aut_minimized, aut, variable_order = formula_to_aut(formula, req.display_atomic_construction, req.base)
         example_solutions = find_example_solutions(aut_minimized, k_solutions, variable_order, base=req.base)
-        if req.base < 2 or req.base > 10:
-            raise AssertionError("Base must be between 2 and 10.")
         dot_string = aut_to_dot(aut, variable_order, display_labels=req.display_labels, display_atomic_construction=req.display_atomic_construction, base=req.base)
         mata_string = nfa_to_mata(aut)
         num_states = len(aut.get_reachable_states())
@@ -122,6 +122,8 @@ async def automaton_reorder(req: ReorderRequest):
         else:
             aut = nfa_from_mata(req.aut)
             aut_minimized = aut
+        if req.base < 2:
+            raise AssertionError("Base must be at least 2.")
         example_solutions = find_example_solutions(
             aut_minimized,
             req.k_solutions,
@@ -129,8 +131,6 @@ async def automaton_reorder(req: ReorderRequest):
             req.new_variable_order,
             base=req.base
         )
-        if req.base < 2 or req.base > 10: 
-            raise AssertionError("Base must be between 2 and 10.")
         dot_string = aut_to_dot(
             aut,
             req.original_variable_order,

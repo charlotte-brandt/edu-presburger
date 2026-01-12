@@ -507,17 +507,16 @@ export default function Home() {
               id="base-input"
               type="number"
               min="2"
-              max="10"
               value={base}
               onChange={(e) => {
                 const val = parseInt(e.target.value);
-                if (!isNaN(val) && val >= 2 && val <= 10) {
+                if (!isNaN(val) && val >= 2) {
                   setBase(val);
                 }
               }}
               className="w-20 px-3 py-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <span className="text-sm text-gray-500">(2 for binary, 10 for decimal, etc.)</span>
+            <span className="text-sm text-gray-500">(2 for binary, 10 for decimal, etc. Labels shown for bases 2-36, structure only for bases &gt; 36)</span>
           </div>
           
           {/* Help Section */}

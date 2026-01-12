@@ -526,7 +526,9 @@ def aut_to_dot(aut, variable_order, new_variable_order = None, display_labels = 
     dot = aut.to_dot_str()
     node_count = len(aut.get_reachable_states())
     print(dot)
-    dot = convert_int_labels_to_digitstrings(dot, len(variable_order), base)
+    # Only convert labels for bases 2-36 (supports 0-9, A-Z notation)
+    if base <= 36:
+        dot = convert_int_labels_to_digitstrings(dot, len(variable_order), base)
     print(dot)
     if new_variable_order:
         if set(new_variable_order) != set(variable_order):
@@ -534,11 +536,13 @@ def aut_to_dot(aut, variable_order, new_variable_order = None, display_labels = 
                 "variable_order must be a permutation of the internal "
                 f"variables {variable_order}, got {new_variable_order}"
             )
-        mapping = {
-            old_idx: new_variable_order.index(var)
-            for old_idx, var in enumerate(variable_order)
-        }
-        dot = reorder_digitstring_labels(dot, mapping, len(variable_order))
+        # Reordering only makes sense when labels are converted to digit strings (bases <= 36)
+        if base <= 36:
+            mapping = {
+                old_idx: new_variable_order.index(var)
+                for old_idx, var in enumerate(variable_order)
+            }
+            dot = reorder_digitstring_labels(dot, mapping, len(variable_order))
     print(dot)
     if not display_labels:
         dot = strip_state_names(dot)
@@ -547,7 +551,9 @@ def aut_to_dot(aut, variable_order, new_variable_order = None, display_labels = 
         dot = rewrite_nodes_with_decode(dot)
     print(dot)
     dot = merge_parallel_edges(dot)
-    dot = simplify_automaton_labels(dot, base)
+    # Simplification only makes sense for digit string labels (bases <= 36)
+    if base <= 36:
+        dot = simplify_automaton_labels(dot, base)
     dot = add_rankdir_auto(dot, node_count)
     dot = optimize_dot_start_arrow(dot)
     print(dot)
